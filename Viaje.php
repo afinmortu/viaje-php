@@ -1,67 +1,113 @@
-<?php
-class Viaje{
-    //Informacion de viajes
-    //Los atributos son el codigo del viaje, el destino, la cantidad maxima de pasajeros y sus datos
-    private $arrDatosViaje;
-    private $arrPasajeros ;//= array (0 => array("Apellido", "Nombre", "Dni"));
+<?php 
 
-    public function __construct($arrViajeNuevo){   
-        //Metodo constructor de la clase Viaje
-        $this->arrDatosViaje = $arrViajeNuevo;
-        $this->arrPasajeros[0]["Apellido"] = "";
-        $this->arrPasajeros[0]["Nombre"] = "";  
-        $this->arrPasajeros[0]["Dni"] = ""; 
-    }
-    //Metodo para obtener los datos del viaje
-    public function getDatosViaje(){
-        return $this->arrDatosViaje;
-    }
-    public function getDatosPasajeros(){
-        return $this->arrPasajeros;
-    }
-    public function getCantPasajeros(){
-        $cantPasajeros = count($this->arrPasajeros);
-        return $cantPasajeros;
-    }
-    public function getMaxLugar(){
-        return $this->arrDatosViaje[2];
-    }
-    //Metodos para modificar los datos del viaje
-    public function setDatos($arrViaje, $arrDatosPasajeros){
-        $this->arrDatosViaje = $arrViaje;
-        $this->arrPasajeros = $arrDatosPasajeros;
-    }
-    public function setAgregarPasajero($arrPasajeroNuevo){
-        if ($this->arrPasajeros[0]["Nombre"] == ""){
-            $this->arrPasajeros[0] = $arrPasajeroNuevo;
-        }else{
-        array_push($this->arrPasajeros, $arrPasajeroNuevo);
-        }
-    }
-    public function setModificarViaje($arrViajeNuevo){
-        $this->arrDatosViaje = $arrViajeNuevo;
-    }
-    public function getCodigoViaje(){
-        return $this->arrDatosViaje[0];
-    }
-
-    //Metodo que busca un pasajero con el numero de DNI retorna el numero de indice del arreglo donde 
-    //ubicar el pasajero y la variable booleana indicando si existe este numero de DNI
-    /*
-    public function buscarDni($dni){
-        $indice = count($this->arrPasajeros) -1;
-        $existePasajero = FALSE;
-    do{
-        if ($this->arrPasajeros[$indice]["dni"] == $dni){
-            $existePasajero = TRUE;
-        }else{
-        $indice = $indice -1;
-        }
-    }while(($existePasajero == FALSE) && ($indice >= 0));
-    return $indice , $existePasajero;
-    }*/
-	public function __toString(){
-		return "  \n".$this->arrDatosViaje[0]. " "."\n";
-	}
+/**
+ * Clase Viaje.php 
+ * Permite gestionar un viaje y sus pasajeros
+ * 
+ * Autor: Mauricio Ferreyra
+ * 
+ * para probar el código, ejecutar el archivo testViaje.php:
+ * php testViaje.php
+ * 
+ */
+class Viaje {
+    private $codigo;
+    private $destino;
+    private $max_pasajeros;
+    private $pasajeros = array();
     
+    public function __construct($codigo, $destino, $max_pasajeros) 
+    {
+        $this->codigo = $codigo;
+        $this->destino = $destino;
+        $this->max_pasajeros = $max_pasajeros;
+    }
+    
+    public function mostrar_menu() 
+    {
+        echo "\n";
+        echo "---- Sistema Viaje Felíz ----\n\n";
+        echo "Menú:\n";
+        echo " 1. Modificar código del viaje\n";
+        echo " 2. Modificar destino del viaje\n";
+        echo " 3. Modificar cantidad máxima de pasajeros\n";
+        echo " 4. Agregar pasajero\n";
+        echo " 5. Quitar pasajero\n";
+        echo " 6. Mostrar información del viaje\n";
+        echo " 7. Salir\n";
+        echo "\n";
+    }
+    
+    public function modificar_codigo() 
+    {
+        echo "Ingrese el nuevo código del viaje:\n";
+        $this->codigo = readline();
+        echo "Código del viaje modificado correctamente.\n";
+    }
+    
+    public function modificar_destino() 
+    {
+        echo "Ingrese el nuevo destino del viaje:\n";
+        $this->destino = readline();
+        echo "Destino del viaje modificado correctamente.\n";
+    }
+    
+    public function modificar_max_pasajeros() 
+    {
+        echo "Ingrese la nueva cantidad máxima de pasajeros:\n";
+        $this->max_pasajeros = intval(readline());
+        echo "Cantidad máxima de pasajeros modificada correctamente.\n";
+    }
+    
+    public function agregar_pasajero() 
+    {
+        if(count($this->pasajeros) >= $this->max_pasajeros) {
+            echo "El viaje está completo, no se pueden agregar más pasajeros.\n";
+            return;
+        }
+        
+        echo "Ingrese el Nombre del pasajero:\n";
+        $nombre = readline();
+        
+        echo "Ingrese el Apellido del pasajero:\n";
+        $apellido = readline();
+        
+        echo "Ingrese el DNI del pasajero:\n";
+        $documento = intval(readline());
+        
+        $this->pasajeros[$documento]['nombre']      = $nombre;
+        $this->pasajeros[$documento]['apellido']    = $apellido;
+        
+        echo "Pasajero ".count($this->pasajeros)." agregado correctamente.\n";
+    }
+    
+    public function quitar_pasajero() 
+    {
+        echo "Ingrese el número de documento del pasajero a quitar:\n";
+        
+        $documento = intval(readline());
+        if(isset($this->pasajeros[$documento])) {
+            unset($this->pasajeros[$documento]);
+            echo "Pasajero eliminado correctamente.\n";
+        } else {
+            echo "No se encontró ningún pasajero con ese número de DNI.\n";
+        }
+    }
+    
+    public function mostrar_info() 
+    {
+        echo "----Información del Viaje----\n";
+        echo "*** Código: ".$this->codigo."\n";
+        echo "*** Destino: ".$this->destino."\n";
+        echo "*** Cantidad máxima de pasajeros: ".$this->max_pasajeros."\n";
+        echo "*** Pasajeros:\n";
+        
+        $orden = 1;
+        foreach($this->pasajeros as $documento => $datos) 
+        {
+            echo "*** ".$orden." --> DNI ".$documento.": ".$datos['apellido'].", ".$datos['nombre']."\n";
+            $orden++;
+        }
+        echo "----------------------------\n";
+    }
 }
